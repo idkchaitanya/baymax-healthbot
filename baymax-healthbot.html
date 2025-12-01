@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baymax - Your AI Health Companion</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --primary-blue: #3b82f6;
+            --soft-purple: #a78bfa;
+            --light-blue: #dbeafe;
+            --light-purple: #ede9fe;
+        }
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7ff 0%, #e0e7ff 100%);
+            min-height: 100vh;
+        }
+        
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        }
+        
+        .glass-dark {
+            background: rgba(59, 130, 246, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+        
+        .gradient-text {
+            background: linear-gradient(90deg, #3b82f6, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .feature-card {
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .chatbot-bubble {
+            animation: bubble 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes bubble {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        .symptom-tag {
+            transition: all 0.2s ease;
+        }
+        
+        .symptom-tag:hover {
+            transform: scale(1.05);
+        }
+        
+        .upload-area {
+            transition: all 0.3s ease;
+        }
+        
+        .upload-area:hover {
+            background-color: rgba(59, 130, 246, 0.05);
+            border-color: #3b82f6;
+        }
+        
+        .upload-area.dragover {
+            background-color: rgba(59, 130, 246, 0.1);
+            border-color: #3b82f6;
+            transform: scale(1.02);
+        }
+        
+        .loader {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid white;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .rotate-180 {
+            transform: rotate(180deg);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .health-card {
+            transition: all 0.3s ease;
+        }
+        
+        .health-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .notification {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            padding: 15px 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            border-left: 4px solid #10b981;
+        }
+        
+        .notification.error {
+            border-left: 4px solid #ef4444;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="glass sticky top-0 z-40 px-4 py-3 md:px-8 md:py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                    <i class="fas fa-heartbeat text-white"></i>
+                </div>
+                <h1 class="text-xl md:text-2xl font-bold gradient-text">Baymax</h1>
+            </div>
+            
+            <div class="hidden md:flex items-center space-x-6">
+                <button onclick="showPage('home')" class="nav-link text-gray-700 hover:text-blue-500 transition font-medium">Home</button>
+                <button onclick="showPage('prescription')" class="nav-link text-gray-700 hover:text-blue-500 transition font-medium">Prescription Reader</button>
+                <button onclick="showPage('symptom')" class="nav-link text-gray-700 hover:text-blue-500 transition font-medium">Symptom Checker</button>
+                <button onclick="showPage('encyclopedia')" class="nav-link text-gray-700 hover:text-blue-500 transition font-medium">Health Encyclopedia</button>
+                <button onclick="showPage('about')" class="nav-link text-gray-700 hover:text-blue-500 transition font-medium">About</button>
+                <button onclick="showPage('support')" class="nav-link text-gray-700 hover:text-blue-500 transition font-medium">Support</button>
+                
+                <!-- User Authentication Section -->
+                <div id="authSection" class="flex items-center space-x-3">
+                    <button id="loginBtn" onclick="showLoginModal()" class="px-4 py-2 text-blue-500 font-medium hover:text-blue-600 transition">
+                        Login
+                    </button>
+                    <button id="signupBtn" onclick="showSignupModal()" class="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg font-medium hover:shadow-lg transition">
+                        Sign Up
+                    </button>
+                    
+                    <!-- User Profile (shown when logged in) -->
+                    <div id="userProfile" class="hidden relative">
+                        <button onclick="toggleUserMenu()" class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition">
+                            <div class="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-white text-sm"></i>
+                            </div>
+                            <span id="userName" class="text-gray-700 font-medium">John Doe</span>
+                            <i class="fas fa-chevron-down text-gray-500 text-xs"></i>
+                        </button>
+                        
+                        <div id="userMenu" class="hidden absolute right-0 mt-2 w-48 glass rounded-lg shadow-lg overflow-hidden">
+                            <button onclick="showPage('dashboard')" class="block w-full text-left px-4 py-3 hover:bg-gray-100 transition">
+                                <i class="fas fa-tachometer-alt mr-2 text-gray-600"></i> My Dashboard
+                            </button>
+                            <button onclick="showPage('profile')" class="block w-full text-left px-4 py-3 hover:bg-gray-100 transition">
+                                <i class="fas fa-user-circle mr-2 text-gray-600"></i> My Profile
+                            </button>
+                            <button onclick="showPage('history')" class="block w-full text-left px-4 py-3 hover:bg-gray-100 transition">
+                                <i class="fas fa-history mr-2 text-gray-600"></i> Health History
+                            </button>
+                            <hr class="my-1">
+                            <button onclick="logout()" class="block w-full text-left px-4 py-3 hover:bg-gray-100 transition text-red-500">
+                                <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="mobileMenuBtn" class="md:hidden text-gray-700">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden mt-4 pb-4 md:hidden">
+            <button onclick="showPage('home')" class="block w-full text-left py-2 text-gray-700 hover:text-blue-500 transition font-medium">Home</button>
+            <button onclick="showPage('prescription')" class="block w-full text-left py-2 text-gray-700 hover:text-blue-500 transition font-medium">Prescription Reader</button>
+            <button onclick="showPage('symptom')" class="block w-full text-left py-2 text-gray-700 hover:text-blue-500 transition font-medium">Symptom Checker</button>
+            <button onclick="showPage('encyclopedia')" class="block w-full text-left py-2 text-gray-700 hover:text-blue-500 transition font-medium">Health Encyclopedia</button>
+            <button onclick="showPage('about')" class="block w-full text-left py-2 text-gray-700 hover:text-blue-500 transition font-medium">About</button>
+            <button onclick="showPage('support')" class="block w-full text-left py-2 text-gray-700 hover:text-blue-500 transition font-medium">Support</button>
+            
+            <!-- Mobile Auth Section -->
+            <div id="mobileAuthSection" class="pt-4 border-t mt-4">
+                <button onclick="showLoginModal()" class="block w-full text-left py-2 text-blue-500 font-medium">Login</button>
+                <button onclick="showSignupModal()" class="block w-full text-left py-2 text-blue-500 font-medium">Sign Up</button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="glass rounded-xl p-6 md:p-8 w-full max-w-md mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-semibold text-gray-800">Login to Baymax</h3>
+                <button onclick="closeLoginModal()" class="text-gray-500 hover:text-gray-700 transition">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form onsubmit="handleLogin(event)">
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-medium mb-2">Email</label>
+                    <input type="email" id="loginEmail" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="your@email.com" required>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-medium mb-2">Password</label>
+                    <input type="password" id="loginPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="••••••••" required>
+                </div>
+                
+                <div class="flex items-center justify-between mb-6">
+                    <label class="flex items-center">
+                        <input type="checkbox" class="mr-2">
+                        <span class="text-sm text-gray-600">Remember me</span>
+                    </label>
+                    <a href="#" class="text-sm text-blue-500 hover:text-blue-600 transition">Forgot password?</a>
+                </div>
+                
+                <button type="submit" class="w-full px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg font-medium hover:shadow-lg transition">
+                    Login
+                </button>
+                
+                <div class="mt-6 text-center">
+                    <p class="text-gray-600">Don't have an account? <a href="#" onclick="switchToSignup()" class="text-blue-500 hover:text-blue-600 transition">Sign up</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Sign Up Modal -->
+    <div id="signupModal" class="modal">
+        <div class="glass rounded-xl p-6 md:p-8 w-full max-w-md mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-semibold text-gray-800">Sign Up for Baymax</h3>
+                <button onclick="closeSignupModal()" class="text-gray-500 hover:text-gray-700 transition">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form onsubmit="handleSignup(event)">
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-medium mb-2">Full Name</label>
+                    <input type="text" id="signupName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="John Doe" required>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-medium mb-2">Email</label>
+                    <input type="email" id="signupEmail" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="your@email.com" required>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-medium mb-2">Password</label>
+                    <input type="password" id="signupPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="••••••••" required>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-medium mb-2">Confirm Password</label>
+                    <input type="password" id="confirmPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="••••••••" required>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="flex items-center">
+                        <input type="checkbox" class="mr-2" required>
+                        <span class="text-sm text-gray-600">I agree to the <a href="#" class="text-blue-500 hover:text-blue-600 transition">Terms of Service</a> and <a href="#" class="text-blue-500 hover:text-blue-600 transition">Privacy Policy</a></span>
+                    </label>
+                </div>
+                
+                <button type="submit" class="w-full px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg font-medium hover:shadow-lg transition">
+                    Sign Up
+                </button>
+                
+                <div class="mt-6 text-center">
+                    <p class="text-gray-600">Already have an account? <a href="#" onclick="switchToLogin()" class="text-blue-500 hover:text-blue-600 transition">Login</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Notification -->
+    <div id="notification" class="notification">
+        <div class="flex items-center">
+            <i id="notificationIcon" class="fas fa-check-circle mr-3"></i>
+            <p id="notificationMessage">Success!</p>
+        </div>
+    </div>
+    
+    <!-- Home Page -->
+    <div id="home" class="page active">
+        <!-- Hero Section -->
+        <section class="px-4 py-12 md:px-8 md:py-20">
+            <div class="max-w-7xl mx-auto">
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div class="fade-in">
+                        <h2 class="text-3xl md:text-5xl font-bold text-gray-800 mb-4">
+                            Your Personal <span class="gradient-text">AI Health Companion</span>
+                        </h2>
+                        <p class="text-lg text-gray-600 mb-6">
+                            Baymax simplifies healthcare for everyone with advanced AI capabilities. From reading prescriptions to checking symptoms, we're here to make health information accessible and understandable.
+                        </p>
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <button onclick="showPage('symptom')" class="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg font-medium hover:shadow-lg transition">
+                                Check Symptoms
+                            </button>
+                            <button onclick="showPage('prescription')" class="px-6 py-3 glass rounded-lg font-medium hover:shadow-lg transition">
+                                Read Prescription
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex justify-center">
+                        <div class="floating w-64 h-64 md:w-80 md:h-80 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full flex items-center justify-center">
+                            <i class="fas fa-robot text-white text-6xl md:text-8xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Features Section -->
+        <section class="px-4 py-12 md:px-8 md:py-16">
+            <div class="max-w-7xl mx-auto">
+                <h3 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-12">Baymax Capabilities</h3>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="feature-card glass rounded-xl p-6">
+                        <div class="w-14 h-14 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-file-prescription text-white text-xl"></i>
+                        </div>
+                        <h4 class="text-xl font-semibold text-gray-800 mb-3">Prescription Reader</h4>
+                        <p class="text-gray-600 mb-4">Upload prescriptions in image or PDF format. Baymax extracts medicine details, dosages, timings, and safety instructions in simple language.</p>
+                        <button onclick="showPage('prescription')" class="text-blue-500 font-medium hover:text-blue-600 transition">
+                            Try Now <i class="fas fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="feature-card glass rounded-xl p-6">
+                        <div class="w-14 h-14 bg-gradient-to-br from-purple-400 to-purple-600 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-stethoscope text-white text-xl"></i>
+                        </div>
+                        <h4 class="text-xl font-semibold text-gray-800 mb-3">Symptom Diagnoser</h4>
+                        <p class="text-gray-600 mb-4">Describe your symptoms and Baymax analyzes them to suggest possible conditions, severity indicators, and next steps with clear disclaimers.</p>
+                        <button onclick="showPage('symptom')" class="text-blue-500 font-medium hover:text-blue-600 transition">
+                            Try Now <i class="fas fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="feature-card glass rounded-xl p-6">
+                        <div class="w-14 h-14 bg-gradient-to-br from-indigo-400 to-indigo-600 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-book-medical text-white text-xl"></i>
+                        </div>
+                        <h4 class="text-xl font-semibold text-gray-800 mb-3">Health Encyclopedia</h4>
+                        <p class="text-gray-600 mb-4">Access a comprehensive knowledge hub with detailed information about diseases, treatments, prevention, and first-aid in simple terms.</p>
+                        <button onclick="showPage('encyclopedia')" class="text-blue-500 font-medium hover:text-blue-600 transition">
+                            Explore <i class="fas fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Trust & Safety Section -->
+        <section class="px-4 py-12 md:px-8 md:py-16">
+            <div class="max-w-7xl mx-auto">
+                <div class="glass-dark rounded-2xl p-8 md:p-12">
+                    <h3 class="text-2xl md:text-3xl font-bold text-white mb-6">Your Health Data is Safe with Us</h3>
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div class="flex items-start space-x-3">
+                            <i class="fas fa-shield-alt text-white text-xl mt-1"></i>
+                            <div>
+                                <h4 class="text-white font-semibold mb-1">HIPAA Compliant</h4>
+                                <p class="text-white/80 text-sm">All health data is encrypted and stored following healthcare privacy standards.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <i class="fas fa-lock text-white text-xl mt-1"></i>
+                            <div>
+                                <h4 class="text-white font-semibold mb-1">Secure Storage</h4>
+                                <p class="text-white/80 text-sm">Your information is protected with industry-leading security measures.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <i class="fas fa-user-secret text-white text-xl mt-1"></i>
+                            <div>
+                                <h4 class="text-white font-semibold mb-1">Private & Anonymous</h4>
+                                <p class="text-white/80 text-sm">We never share your personal health information with third parties.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Disclaimer Banner -->
+        <section class="px-4 py-6 md:px-8">
+            <div class="max-w-7xl mx-auto">
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-exclamation-triangle text-yellow-400"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-yellow-700">
+                                <strong>Important Disclaimer:</strong> Baymax is an AI health assistant and not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Dashboard Page -->
+    <div id="dashboard" class="page">
+        <section class="px-4 py-8 md:px-8 md:py-12">
+            <div class="max-w-6xl mx-auto">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+                    <div>
+                        <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">My Health Dashboard</h2>
+                        <p class="text-gray-600">Welcome back, <span id="dashboardUserName">John Doe</span>! Here's your health overview.</p>
+                    </div>
+                    <button onclick="showPage('symptom')" class="mt-4 md:mt-0 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg font-medium hover:shadow-lg transition">
+                        <i class="fas fa-plus mr-2"></i> New Symptom Check
+                    </button>
+                </div>
+                
+                <!-- Health Stats Cards -->
+                <div class="grid md:grid-cols-3 gap-6 mb-8">
+                    <div class="health-card glass rounded-lg p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-file-prescription text-white text-xl"></i>
+                            </div>
+                            <span class="text-sm text-gray-500">This Month</span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-1">3</h3>
+                        <p class="text-gray-600">Prescriptions Analyzed</p>
+                    </div>
+                    
+                    <div class="health-card glass rounded-lg p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-600 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-stethoscope text-white text-xl"></i>
+                            </div>
+                            <span class="text-sm text-gray-500">This Month</span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-1">5</h3>
+                        <p class="text-gray-600">Symptom Checks</p>
+                    </div>
+                    
+                    <div class="health-card glass rounded-lg p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-book-medical text-white text-xl"></i>
+                            </div>
+                            <span class="text-sm text-gray-500">Total</span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-1">12</h3>
+                        <p class="text-gray-600">Saved Articles</p>
+                    </div>
+                </div>
+                
+                <!-- Recent Activity -->
+                <div class="glass rounded-xl p-6 md:p-8 mb-8">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-6">Recent Activity</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-start space-x-4 pb-4 border-b">
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-file-prescription text-blue-500"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-medium text-gray-800">Prescription Analyzed</h4>
+                                <p class="text-sm text-gray-600">Amoxicillin 500mg, Ibuprofen 400mg</p>
+                                <p class="text-xs text-gray-500 mt-1">2 days ago</p>
+                            </div>
+                            <button class="text-blue-500 hover:text-blue-600 transition">
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="flex items-start space-x-4 pb-4 border-b">
+                            <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-stethoscope text-purple-500"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-medium text-gray-800">Symptom Check</h4>
+                                <p class="text-sm text-gray-600">Headache, fever, sore throat</p>
+                                <p class="text-xs text-gray-500 mt-1">5 days ago</p>
+                            </div>
+                            <button class="text-blue-500 hover:text-blue-600 transition">
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="flex items-start space-x-4">
+                            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-bookmark text-green-500"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-medium text-gray-800">Article Saved</h4>
+                                <p class="text-sm text-gray-600">Understanding Migraine Triggers</p>
+                                <p class="text-xs text-gray-500 mt-1">1 week ago</p>
+                            </div>
+                            <button class="text-blue-500 hover:text-blue-600 transition">
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Health Reminders -->
+                <div class="glass rounded-xl p-6 md:p-8">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-6">Health Reminders</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-pills text-blue-500"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-800">Amoxicillin</h4>
+                                    <p class="text-sm text-gray-600">Take 1 capsule three times a day</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-medium text-blue-600">Next dose</p>
+                                <p class="text-xs text-gray-500">2:00 PM</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-4 bg-purple-50 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-user-md text-purple-500"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-800">Doctor Appointment</h4>
+                                    <p class="text-sm text-gray-600">Annual checkup with Dr. Smith</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-medium text-purple-600">Tomorrow</p>
+                                <p class="text-xs text-gray-500">10:30 AM</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Profile Page -->
+    <div id="profile" class="page">
+        <section class="px-4 py-8 md:px-8 md:py-12">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">My Profile</h2>
+                
+                <div class="glass rounded-xl p-6 md:p-8 mb-8">
+                    <div class="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6 mb-8">
+                        <div class="w-24 h-24 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-white text-3xl"></i>
+                        </div>
+                        <div class="text-center md:text-left">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-1" id="profileName">John Doe</h3>
+                            <p class="text-gray-600 mb-4" id="profileEmail">john.doe@example.com</p>
+                            <button class="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg font-medium hover:shadow-lg transition">
+                                <i class="fas fa-camera mr-2"></i> Change Photo
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <form onsubmit="updateProfile(event)">
+                        <div class="grid md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">First Name</label>
+                                <input type="text" id="firstName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" value="John">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">Last Name</label>
+                                <input type="text" id="lastName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" value="Doe">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label class="block text-gray-700 font-medium mb-2">Email</label>
+                            <input type="email" id="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" value="john.doe@example.com">
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label class="block text-gray-700 font-medium mb-2">Phone Number</label>
+                            <input type="tel" id="phone" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" value="+1 (555) 123-4567">
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label class="block text-gray-700 font-medium mb-2">Date of Birth</label>
+                            <input type="date" id="dob" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" value="1985-05-15">
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label class="block text-gray-700 font-medium mb-2">Gender</label>
+                            <select id="gender" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="male" selected>Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                                <option value="prefer-not-to-say">Prefer not to say</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label class="block text-gray-700 font-medium mb-2">Emergency Contact</label>
+                            <input type="text" id="emergencyContact" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" value="Jane Doe (555) 987-6543">
+                        </div>
+                        
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <button type="submit" class="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg font-medium hover:shadow-lg transition">
+                                Save Changes
+                            </button>
+                            <button type="button" class="px-6 py-3 glass rounded-lg font-medium hover:shadow-lg transition">
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="glass rounded-xl p-6 md:p-8">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-6">Privacy Settings</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-medium text-gray-800">Data Sharing</h4>
+                                <p class="text-sm text-gray-600">Allow sharing of anonymized health data for research</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer" checked>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+                            </label>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-medium text-gray-800">Email Notifications</h4>
+                                <p class="text-sm text-gray-600">Receive health tips and reminders via email</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer" checked>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+                            </label>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-medium text-gray-800">Two-Factor Authentication</h4>
+                                <p class="text-sm text-gray-600">Add an extra layer of security to your account</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Health History Page -->
+    <div id="history" class="page">
+        <section class="px-4 py-8 md:px-8 md:py-12">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Health History</h2>
+                
+                <div class="glass rounded-xl p-6 mb-8">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                        <h3 class="text-lg font-semibold text-gray-800">Filter History</h3>
+                        <div class="flex flex-col sm:flex-row gap-3 mt-4 md:mt-0">
+                            <select class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option>All Types</option>
+                                <option>Prescriptions</option>
+                                <option>Symptom Checks</option>
+                                <option>Lab Results</option>
+                            </select>
+                            <select class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option>Last 30 Days</option>
+                                <option>Last 3 Months</option>
+                                <option>Last 6 Months</option>
+                                <option>Last Year</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="border-l-4 border-blue-400 pl-4 py-4">
+                            <div class="flex flex-col md:flex-row md:items-center justify-between">
+                                <div>
+                                    <h4 class="font-medium text-gray-800">Prescription Analysis</h4>
+                                    <p class="text-sm text-gray-600 mt-1">Amoxicillin 500mg, Ibuprofen 400mg</p>
+                                    <p class="text-xs text-gray-500 mt-2">June 15, 2023</p>
+                                </div>
+                                <div class="flex items-center space-x-3 mt-3 md:mt-0">
+                                    <button class="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition">
+                                        View Details
+                                    </button>
+                                    <button class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition">
+                                        Download PDF
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="border-l-4 border-purple-400 pl-4 py-4">
+                            <div class="flex flex-col md:flex-row md:items-center justify-between">
+                                <div>
+                                    <h4 class="font-medium text-gray-800">Symptom Check</h4>
+                                    <p class="text-sm text-gray-600 mt-1">Headache, fever, sore throat - Possible: Common Cold</p>
+                                    <p class="text-xs text-gray-500 mt-2">June 10, 2023</p>
+                                </div>
+                                <div class="flex items-center space-x-3 mt-3 md:mt-0">
+                                    <button class="px-3 py-1 text-sm bg-purple-100 text-purple-700 rounded-full hover:bg-purple-200 transition">
+                                        View Details
+                                    </button>
+                                    <button class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition">
+                                        Download PDF
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="border-l-4 border-green-400 pl-4 py-4">
+                            <div class="flex flex-col md:flex-row md:items-center justify-between">
+                                <div>
+                                    <h4 class="font-medium text-gray-800">Lab Results</h4>
+                                    <p class="text-sm text-gray-600 mt-1">Blood Test - All values within normal range</p>
+                                    <p class="text-xs text-gray-500 mt-2">May 28, 2023</p>
+                                </div>
+                                <div class="flex items-center space-x-3 mt-3 md:mt-0">
+                                    <button class="px-3 py-1 text-sm bg-green-100 text-green-700 rounded-full hover:bg-green-200 transition">
+                                        View Details
+                                    </button>
+                                    <button class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition">
+                                        Download PDF
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Prescription Reader Page -->
+    <div id="prescription" class="page">
+        <section class="px-4 py-8 md:px-8 md:py-12">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Prescription Reader</h2>
+                <p class="text-gray-600 mb-8">Upload your prescription image or PDF, and Baymax will extract and explain all the important details in simple language.</p>
+                
+                <div class="glass rounded-xl p-6 md:p-8 mb-8">
+                    <div id="uploadArea" class="upload-area border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer">
+                        <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+                        <h3 class="text-lg font-medium text-gray-700 mb-2">Upload Prescription</h3>
+                        <p class="text-gray-500 mb-4">Drag and drop your image or PDF here, or click to browse</p>
+                        <input type="file" id="prescriptionFile" class="hidden" accept="image/*,.pdf">
+                        <button onclick="document.getElementById('prescriptionFile').click()" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+                            Choose File
+                        </button>
+                    </div>
+                    
+                    <div id="uploadedFile" class="hidden mt-6">
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-file-image text-blue-500 text-xl"></i>
+                                <div>
+                                    <p class="font-medium text-gray-800" id="fileName">prescription.jpg</p>
+                                    <p class="text-sm text-gray-500" id="fileSize">2.4 MB</p>
+                                </div>
+                            </div>
+                            <button onclick="analyzePrescription()" class="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition">
+                                Analyze <i class="fas fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="prescriptionResults" class="hidden fade-in">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Prescription Analysis</h3>
+                    
+                    <div class="space-y-6">
+                        <div class="glass rounded-lg p-6">
+                            <h4 class="font-semibold text-gray-800 mb-3 flex items-center">
+                                <i class="fas fa-pills text-blue-500 mr-2"></i> Medications
+                            </h4>
+                            <div class="space-y-3">
+                                <div class="border-l-4 border-blue-400 pl-4">
+                                    <h5 class="font-medium text-gray-800">Amoxicillin 500mg</h5>
+                                    <p class="text-gray-600">Take 1 capsule three times a day after meals for 7 days</p>
+                                    <p class="text-sm text-gray-500 mt-1">Purpose: Antibiotic for bacterial infection</p>
+                                </div>
+                                <div class="border-l-4 border-blue-400 pl-4">
+                                    <h5 class="font-medium text-gray-800">Ibuprofen 400mg</h5>
+                                    <p class="text-gray-600">Take 1 tablet as needed for pain, not more than 3 times a day</p>
+                                    <p class="text-sm text-gray-500 mt-1">Purpose: Pain relief and fever reduction</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="glass rounded-lg p-6">
+                            <h4 class="font-semibold text-gray-800 mb-3 flex items-center">
+                                <i class="fas fa-exclamation-circle text-yellow-500 mr-2"></i> Important Instructions
+                            </h4>
+                            <ul class="space-y-2 text-gray-600">
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                    Complete the full course of Amoxicillin even if you feel better
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                    Take Amoxicillin with food to reduce stomach upset
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                    Do not take Ibuprofen on an empty stomach
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="glass rounded-lg p-6">
+                            <h4 class="font-semibold text-gray-800 mb-3 flex items-center">
+                                <i class="fas fa-allergies text-red-500 mr-2"></i> Possible Side Effects
+                            </h4>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <h5 class="font-medium text-gray-700 mb-2">Amoxicillin</h5>
+                                    <ul class="text-sm text-gray-600 space-y-1">
+                                        <li>• Nausea or vomiting</li>
+                                        <li>• Diarrhea</li>
+                                        <li>• Skin rash</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h5 class="font-medium text-gray-700 mb-2">Ibuprofen</h5>
+                                    <ul class="text-sm text-gray-600 space-y-1">
+                                        <li>• Stomach pain</li>
+                                        <li>• Heartburn</li>
+                                        <li>• Dizziness</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-4 italic">Contact your doctor if you experience severe side effects or allergic reactions.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 flex flex-col sm:flex-row gap-4">
+                        <button onclick="downloadPrescriptionInfo()" class="px-4 py-2 glass rounded-lg font-medium hover:shadow-lg transition">
+                            <i class="fas fa-download mr-2"></i> Download Summary
+                        </button>
+                        <button onclick="setReminder()" class="px-4 py-2 glass rounded-lg font-medium hover:shadow-lg transition">
+                            <i class="fas fa-bell mr-2"></i> Set Medication Reminder
+                        </button>
+                        <button onclick="saveToHistory()" class="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg font-medium hover:shadow-lg transition">
+                            <i class="fas fa-save mr-2"></i> Save to Health History
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Disclaimer Banner -->
+        <section class="px-4 py-6 md:px-8">
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-exclamation-triangle text-yellow-400"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-yellow-700">
+                                <strong>Important:</strong> This AI analysis is for informational purposes only. Always follow your doctor's instructions and consult with your pharmacist if you have questions about your medication.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Symptom Checker Page -->
+    <div id="symptom" class="page">
+        <section class="px-4 py-8 md:px-8 md:py-12">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Symptom Checker</h2>
+                <p class="text-gray-600 mb-8">Describe your symptoms, and Baymax will help you understand possible conditions and next steps.</p>
+                
+                <div class="glass rounded-xl p-6 md:p-8 mb-8">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Tell us about your symptoms</h3>
+                    
+                    <div class="mb-6">
+                        <label class="block text-gray-700 font-medium mb-2">How are you feeling?</label>
+                        <textarea id="symptomDescription" rows="4" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="E.g., I have a headache, fever, and sore throat that started yesterday..."></textarea>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-gray-700 font-medium mb-2">Common symptoms (select all that apply)</label>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="toggleSymptom(this, 'fever')" class="symptom-tag px-3 py-2 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-blue-100 hover:text-blue-700 transition">
+                                <i class="fas fa-thermometer-half mr-1"></i> Fever
+                            </button>
+                            <button onclick="toggleSymptom(this, 'headache')" class="symptom-tag px-3 py-2 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-blue-100 hover:text-blue-700 transition">
+                                <i class="fas fa-head-side-virus mr-1"></i> Headache
+                            </button>
+                            <button onclick="toggleSymptom(this, 'cough')" class="symptom-tag px-3 py-2 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-blue-100 hover:text-blue-700 transition">
+                                <i class="fas fa-lungs mr-1"></i> Cough
+                            </button>
+                            <button onclick="toggleSymptom(this, 'fatigue')" class="symptom-tag px-3 py-2 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-blue-100 hover:text-blue-700 transition">
+                                <i class="fas fa-battery-quarter mr-1"></i> Fatigue
+                            </button>
+                            <button onclick="toggleSymptom(this, 'nausea')" class="symptom-tag px-3 py-2 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-blue-100 hover:text-blue-700 transition">
+                                <i class="fas fa-stomach mr-1"></i> Nausea
+                            </button>
+                            <button onclick="toggleSymptom(this, 'pain')" class="symptom-tag px-3 py-2 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-blue-100 hover:text-blue-700 transition">
+                                <i class="fas fa-bone mr-1"></i> Body Pain
+                            </button>
+                            <button onclick="toggleSymptom(this, 'sore-throat')" class="symptom-tag px-3 py-2 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-blue-100 hover:text-blue-700 transition">
+                                <i class="fas fa-comment-medical mr-1"></i> Sore Throat
+                            </button>
+                            <button onclick="toggleSymptom(this, 'breathing')" class="symptom-tag px-3 py-2 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-blue-100 hover:text-blue-700 transition">
+                                <i class="fas fa-wind mr-1"></i> Breathing Difficulty
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-gray-700 font-medium mb-2">How long have you had these symptoms?</label>
+                        <select id="symptomDuration" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">Select duration</option>
+                            <option value="less-than-a-day">Less than a day</option>
+                            <option value="1-3-days">1-3 days</option>
+                            <option value="4-7-days">4-7 days</option>
+                            <option value="1-2-weeks">1-2 weeks</option>
+                            <option value="more-than-2-weeks">More than 2 weeks</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-gray-700 font-medium mb-2">Severity of symptoms</label>
+                        <div class="flex items-center space-x-4">
+                            <button onclick="setSeverity(1)" class="severity-btn px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-green-100 hover:text-green-700 transition">
+                                <i class="fas fa-smile mr-1"></i> Mild
+                            </button>
+                            <button onclick="setSeverity(2)" class="severity-btn px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-yellow-100 hover:text-yellow-700 transition">
+                                <i class="fas fa-meh mr-1"></i> Moderate
+                            </button>
+                            <button onclick="setSeverity(3)" class="severity-btn px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-red-100 hover:text-red-700 transition">
+                                <i class="fas fa-frown mr-1"></i> Severe
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <button onclick="analyzeSymptoms()" class="w-full px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg font-medium hover:shadow-lg transition">
+                        Analyze Symptoms <i class="fas fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+                
+                <div id="symptomResults" class="hidden fade-in">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Symptom Analysis Results</h3>
+                    
+                    <div class="glass rounded-lg p-6 mb-6">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mr-3">
+                                <i class="fas fa-exclamation-triangle text-yellow-500 text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800">Possible Conditions</h4>
+                                <p class="text-sm text-gray-500">Based on your symptoms, here are some possibilities</p>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="border-l-4 border-yellow-400 pl-4">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h5 class="font-medium text-gray-800">Common Cold</h5>
+                                        <p class="text-sm text-gray-600 mt-1">Viral infection of the nose and throat</p>
+                                        <div class="flex items-center mt-2">
+                                            <span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full">75% match</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border-l-4 border-yellow-400 pl-4">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h5 class="font-medium text-gray-800">Influenza (Flu)</h5>
+                                        <p class="text-sm text-gray-600 mt-1">Respiratory infection caused by influenza viruses</p>
+                                        <div class="flex items-center mt-2">
+                                            <span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full">60% match</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border-l-4 border-yellow-400 pl-4">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h5 class="font-medium text-gray-800">COVID-19</h5>
+                                        <p class="text-sm text-gray-600 mt-1">Infectious disease caused by SARS-CoV-2 virus</p>
+                                        <div class="flex items-center mt-2">
+                                            <span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full">45% match</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="glass rounded-lg p-6 mb-6">
+                        <h4 class="font-semibold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-clipboard-list text-blue-500 mr-2"></i> Recommended Next Steps
+                        </h4>
+                        <ul class="space-y-2 text-gray-600">
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                <span>Rest and stay hydrated by drinking plenty of fluids</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                <span>Take over-the-counter pain relievers for fever and discomfort</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                <span>Monitor your symptoms and seek medical attention if they worsen</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                <span>Consider getting tested for COVID-19 if you've been exposed or symptoms persist</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="glass rounded-lg p-6 mb-6">
+                        <h4 class="font-semibold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-exclamation-circle text-red-500 mr-2"></i> When to Seek Immediate Medical Attention
+                        </h4>
+                        <p class="text-gray-600 mb-3">Contact emergency services or visit an emergency room if you experience:</p>
+                        <ul class="space-y-2 text-gray-600">
+                            <li class="flex items-start">
+                                <i class="fas fa-exclamation-triangle text-red-500 mt-1 mr-2"></i>
+                                <span>Difficulty breathing or shortness of breath</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-exclamation-triangle text-red-500 mt-1 mr-2"></i>
+                                <span>Persistent pain or pressure in the chest</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-exclamation-triangle text-red-500 mt-1 mr-2"></i>
+                                <span>Confusion or inability to wake up</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-exclamation-triangle text-red-500 mt-1 mr-2"></i>
+                                <span>Bluish lips or face</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button onclick="saveSymptomReport()" class="px-4 py-2 glass rounded-lg font-medium hover:shadow-lg transition">
+                            <i class="fas fa-save mr-2"></i> Save Report
+                        </button>
+                        <button onclick="findNearbyDoctor()" class="px-4 py-2 glass rounded-lg font-medium hover:shadow-lg transition">
+                            <i class="fas fa-hospital mr-2"></i> Find Nearby Doctor
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Disclaimer Banner -->
+        <section class="px-4 py-6 md:px-8">
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-exclamation-triangle text-yellow-400"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-yellow-700">
+                                <strong>Medical Disclaimer:</strong> This symptom checker is for informational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment. If you think you may have a medical emergency, call your doctor or emergency services immediately.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Health Encyclopedia Page -->
+    <div id="encyclopedia" class="page">
+        <section class="px-4 py-8 md:px-8 md:py-12">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Health Encyclopedia</h2>
+                <p class="text-gray-600 mb-8">Search our comprehensive knowledge base for information about diseases, symptoms, treatments, and more.</p>
+                
+                <div class="glass rounded-xl p-6 mb-8">
+                    <div class="relative">
+                        <input type="text" id="encyclopediaSearch" placeholder="Search for diseases, symptoms, treatments..." class="w-full px-4 py-3 pl-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                    
+                    <div class="mt-4 flex flex-wrap gap-2">
+                        <span class="text-sm text-gray-500">Popular searches:</span>
+                        <button onclick="quickSearch('diabetes')" class="text-sm text-blue-500 hover:text-blue-600 transition">Diabetes</button>
+                        <button onclick="quickSearch('hypertension')" class="text-sm text-blue-500 hover:text-blue-600 transition">Hypertension</button>
+                        <button onclick="quickSearch('asthma')" class="text-sm text-blue-500 hover:text-blue-600 transition">Asthma</button>
+                        <button onclick="quickSearch('covid-19')" class="text-sm text-blue-500 hover:text-blue-600 transition">COVID-19</button>
+                        <button onclick="quickSearch('migraine')" class="text-sm text-blue-500 hover:text-blue-600 transition">Migraine</button>
+                    </div>
+                </div>
+                
+                <div class="grid md:grid-cols-3 gap-6 mb-8">
+                    <div class="glass rounded-lg p-6 hover:shadow-lg transition cursor-pointer" onclick="showCategory('conditions')">
+                        <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-virus text-white text-xl"></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-800 mb-2">Conditions & Diseases</h3>
+                        <p class="text-sm text-gray-600">Comprehensive information about various health conditions</p>
+                    </div>
+                    
+                    <div class="glass rounded-lg p-6 hover:shadow-lg transition cursor-pointer" onclick="showCategory('symptoms')">
+                        <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-600 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-notes-medical text-white text-xl"></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-800 mb-2">Symptoms</h3>
+                        <p class="text-sm text-gray-600">Understand what different symptoms might indicate</p>
+                    </div>
+                    
+                    <div class="glass rounded-lg p-6 hover:shadow-lg transition cursor-pointer" onclick="showCategory('treatments')">
+                        <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-pills text-white text-xl"></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-800 mb-2">Treatments</h3>
+                        <p class="text-sm text-gray-600">Learn about different treatment options and medications</p>
+                    </div>
+                    
+                    <div class="glass rounded-lg p-6 hover:shadow-lg transition cursor-pointer" onclick="showCategory('prevention')">
+                        <div class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-shield-alt text-white text-xl"></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-800 mb-2">Prevention</h3>
+                        <p class="text-sm text-gray-600">Tips and strategies to maintain good health</p>
+                    </div>
+                    
+                    <div class="glass rounded-lg p-6 hover:shadow-lg transition cursor-pointer" onclick="showCategory('first-aid')">
+                        <div class="w-12 h-12 bg-gradient-to-br from-red-400 to-red-600 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-first-aid text-white text-xl"></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-800 mb-2">First Aid</h3>
+                        <p class="text-sm text-gray-600">Emergency procedures and immediate care guidance</p>
+                    </div>
+                    
+                    <div class="glass rounded-lg p-6 hover:shadow-lg transition cursor-pointer" onclick="showCategory('tests')">
+                        <div class="w-12 h-12 bg-gradient-to-br from-indigo-400 to-indigo-600 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-vial text-white text-xl"></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-800 mb-2">Diagnostic Tests</h3>
+                        <p class="text-sm text-gray-600">Information about medical tests and procedures</p>
+                    </div>
+                </div>
+                
+                <div id="encyclopediaResults" class="hidden fade-in">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Search Results</h3>
+                    
+                    <div class="space-y-4" id="resultsContainer">
+                        <!-- Results will be dynamically inserted here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- About Page -->
+    <div id="about" class="page">
+        <section class="px-4 py-8 md:px-8 md:py-12">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">About Baymax</h2>
+                
+                <div class="glass rounded-xl p-6 md:p-8 mb-8">
+                    <div class="flex flex-col md:flex-row items-center gap-6 mb-8">
+                        <div class="w-32 h-32 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-robot text-white text-5xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-3">Our Mission</h3>
+                            <p class="text-gray-600">
+                                Baymax is dedicated to making healthcare information accessible, understandable, and actionable for everyone. We believe that everyone deserves access to reliable health information, regardless of their medical knowledge or background.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-6 mb-8">
+                        <div>
+                            <h4 class="font-semibold text-gray-800 mb-3">What We Do</h4>
+                            <ul class="space-y-2 text-gray-600">
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                    <span>Simplify complex medical information</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                    <span>Provide instant health insights</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                    <span>Help users understand prescriptions</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                    <span>Offer preliminary symptom analysis</span>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-semibold text-gray-800 mb-3">Our Values</h4>
+                            <ul class="space-y-2 text-gray-600">
+                                <li class="flex items-start">
+                                    <i class="fas fa-heart text-red-500 mt-1 mr-2"></i>
+                                    <span>Empathy and care in every interaction</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-shield-alt text-blue-500 mt-1 mr-2"></i>
+                                    <span>Privacy and data protection</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-balance-scale text-purple-500 mt-1 mr-2"></i>
+                                    <span>Accuracy and reliability</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-users text-green-500 mt-1 mr-2"></i>
+                                    <span>Accessibility for all users</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="border-t pt-6">
+                        <h4 class="font-semibold text-gray-800 mb-3">The Baymax Promise</h4>
+                        <p class="text-gray-600 mb-4">
+                            While Baymax provides valuable health insights, we always emphasize that our AI is not a substitute for professional medical advice. We encourage users to consult healthcare professionals for diagnosis and treatment, while using Baymax as a complementary tool to better understand their health.
+                        </p>
+                        <p class="text-gray-600">
+                            Our technology is continuously improving through research and user feedback, ensuring that Baymax remains a trusted companion in your healthcare journey.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="glass rounded-xl p-6 md:p-8">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Our Team</h3>
+                    <p class="text-gray-600 mb-6">
+                        Baymax was created by a team of healthcare professionals, AI researchers, and user experience designers who are passionate about making healthcare more accessible and understandable.
+                    </p>
+                    
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div class="text-center">
+                            <div class="w-20 h-20 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full mx-auto mb-3 flex items-center justify-center">
+                                <i class="fas fa-user-md text-white text-2xl"></i>
+                            </div>
+                            <h4 class="font-medium text-gray-800">Medical Experts</h4>
+                            <p class="text-sm text-gray-600">Licensed physicians and healthcare professionals</p>
+                        </div>
+                        
+                        <div class="text-center">
+                            <div class="w-20 h-20 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full mx-auto mb-3 flex items-center justify-center">
+                                <i class="fas fa-brain text-white text-2xl"></i>
+                            </div>
+                            <h4 class="font-medium text-gray-800">AI Researchers</h4>
+                            <p class="text-sm text-gray-600">Specialists in medical AI and natural language processing</p>
+                        </div>
+                        
+                        <div class="text-center">
+                            <div class="w-20 h-20 bg-gradient-to-br from-green-400 to-green-600 rounded-full mx-auto mb-3 flex items-center justify-center">
+                                <i class="fas fa-palette text-white text-2xl"></i>
+                            </div>
+                            <h4 class="font-medium text-gray-800">UX Designers</h4>
+                            <p class="text-sm text-gray-600">Experts in creating intuitive, user-friendly interfaces</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Support Page -->
+    <div id="support" class="page">
+        <section class="px-4 py-8 md:px-8 md:py-12">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Support & Help</h2>
+                <p class="text-gray-600 mb-8">Find answers to common questions or get in touch with our support team.</p>
+                
+                <div class="grid md:grid-cols-2 gap-6 mb-8">
+                    <div class="glass rounded-lg p-6">
+                        <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-comments text-white text-xl"></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-800 mb-2">Live Chat Support</h3>
+                        <p class="text-gray-600 mb-4">Chat with our support team for immediate assistance</p>
+                        <button class="text-blue-500 font-medium hover:text-blue-600 transition">
+                            Start Chat <i class="fas fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="glass rounded-lg p-6">
+                        <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-600 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-envelope text-white text-xl"></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-800 mb-2">Email Support</h3>
+                        <p class="text-gray-600 mb-4">Send us an email and we'll respond within 24 hours</p>
+                        <a href="mailto:support@baymax.health" class="text-blue-500 font-medium hover:text-blue-600 transition">
+                            support@baymax.health <i class="fas fa-external-link-alt ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="glass rounded-xl p-6 md:p-8 mb-8">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-6">Frequently Asked Questions</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="border-b pb-4">
+                            <button onclick="toggleFAQ(this)" class="w-full flex justify-between items-center text-left">
+                                <h4 class="font-medium text-gray-800">Is Baymax a substitute for medical advice?</h4>
+                                <i class="fas fa-chevron-down text-gray-500 transition-transform"></i>
+                            </button>
+                            <div class="hidden mt-3 text-gray-600">
+                                <p>No, Baymax is not a substitute for professional medical advice. Our AI provides information and insights to help you better understand your health, but always consult with qualified healthcare professionals for diagnosis and treatment.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="border-b pb-4">
+                            <button onclick="toggleFAQ(this)" class="w-full flex justify-between items-center text-left">
+                                <h4 class="font-medium text-gray-800">How does Baymax protect my health data?</h4>
+                                <i class="fas fa-chevron-down text-gray-500 transition-transform"></i>
+                            </button>
+                            <div class="hidden mt-3 text-gray-600">
+                                <p>Baymax uses industry-standard encryption and security measures to protect your data. We comply with healthcare privacy regulations like HIPAA and never share your personal health information with third parties without your explicit consent.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="border-b pb-4">
+                            <button onclick="toggleFAQ(this)" class="w-full flex justify-between items-center text-left">
+                                <h4 class="font-medium text
