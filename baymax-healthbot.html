@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -142,57 +143,6 @@
         .rotate-180 {
             transform: rotate(180deg);
         }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 100;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .modal.active {
-            display: flex;
-        }
-        
-        .health-card {
-            transition: all 0.3s ease;
-        }
-        
-        .health-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-        
-        .notification {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            padding: 15px 20px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            z-index: 1000;
-            transform: translateX(400px);
-            transition: transform 0.3s ease;
-        }
-        
-        .notification.show {
-            transform: translateX(0);
-        }
-        
-        .notification.success {
-            border-left: 4px solid #10b981;
-        }
-        
-        .notification.error {
-            border-left: 4px solid #ef4444;
-        }
     </style>
 </head>
 <body>
@@ -213,43 +163,6 @@
                 <button onclick="showPage('encyclopedia')" class="nav-link text-gray-700 hover:text-blue-500 transition font-medium">Health Encyclopedia</button>
                 <button onclick="showPage('about')" class="nav-link text-gray-700 hover:text-blue-500 transition font-medium">About</button>
                 <button onclick="showPage('support')" class="nav-link text-gray-700 hover:text-blue-500 transition font-medium">Support</button>
-                
-                <!-- User Authentication Section -->
-                <div id="authSection" class="flex items-center space-x-3">
-                    <button id="loginBtn" onclick="showLoginModal()" class="px-4 py-2 text-blue-500 font-medium hover:text-blue-600 transition">
-                        Login
-                    </button>
-                    <button id="signupBtn" onclick="showSignupModal()" class="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg font-medium hover:shadow-lg transition">
-                        Sign Up
-                    </button>
-                    
-                    <!-- User Profile (shown when logged in) -->
-                    <div id="userProfile" class="hidden relative">
-                        <button onclick="toggleUserMenu()" class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition">
-                            <div class="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full flex items-center justify-center">
-                                <i class="fas fa-user text-white text-sm"></i>
-                            </div>
-                            <span id="userName" class="text-gray-700 font-medium">John Doe</span>
-                            <i class="fas fa-chevron-down text-gray-500 text-xs"></i>
-                        </button>
-                        
-                        <div id="userMenu" class="hidden absolute right-0 mt-2 w-48 glass rounded-lg shadow-lg overflow-hidden">
-                            <button onclick="showPage('dashboard')" class="block w-full text-left px-4 py-3 hover:bg-gray-100 transition">
-                                <i class="fas fa-tachometer-alt mr-2 text-gray-600"></i> My Dashboard
-                            </button>
-                            <button onclick="showPage('profile')" class="block w-full text-left px-4 py-3 hover:bg-gray-100 transition">
-                                <i class="fas fa-user-circle mr-2 text-gray-600"></i> My Profile
-                            </button>
-                            <button onclick="showPage('history')" class="block w-full text-left px-4 py-3 hover:bg-gray-100 transition">
-                                <i class="fas fa-history mr-2 text-gray-600"></i> Health History
-                            </button>
-                            <hr class="my-1">
-                            <button onclick="logout()" class="block w-full text-left px-4 py-3 hover:bg-gray-100 transition text-red-500">
-                                <i class="fas fa-sign-out-alt mr-2"></i> Logout
-                            </button>
-                        </div>
-                    </div>
-                </div>
             </div>
             
             <button id="mobileMenuBtn" class="md:hidden text-gray-700">
@@ -265,111 +178,8 @@
             <button onclick="showPage('encyclopedia')" class="block w-full text-left py-2 text-gray-700 hover:text-blue-500 transition font-medium">Health Encyclopedia</button>
             <button onclick="showPage('about')" class="block w-full text-left py-2 text-gray-700 hover:text-blue-500 transition font-medium">About</button>
             <button onclick="showPage('support')" class="block w-full text-left py-2 text-gray-700 hover:text-blue-500 transition font-medium">Support</button>
-            
-            <!-- Mobile Auth Section -->
-            <div id="mobileAuthSection" class="pt-4 border-t mt-4">
-                <button onclick="showLoginModal()" class="block w-full text-left py-2 text-blue-500 font-medium">Login</button>
-                <button onclick="showSignupModal()" class="block w-full text-left py-2 text-blue-500 font-medium">Sign Up</button>
-            </div>
         </div>
     </nav>
-    
-    <!-- Login Modal -->
-    <div id="loginModal" class="modal">
-        <div class="glass rounded-xl p-6 md:p-8 w-full max-w-md mx-4">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-semibold text-gray-800">Login to Baymax</h3>
-                <button onclick="closeLoginModal()" class="text-gray-500 hover:text-gray-700 transition">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            
-            <form onsubmit="handleLogin(event)">
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-medium mb-2">Email</label>
-                    <input type="email" id="loginEmail" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="your@email.com" required>
-                </div>
-                
-                <div class="mb-6">
-                    <label class="block text-gray-700 font-medium mb-2">Password</label>
-                    <input type="password" id="loginPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="••••••••" required>
-                </div>
-                
-                <div class="flex items-center justify-between mb-6">
-                    <label class="flex items-center">
-                        <input type="checkbox" class="mr-2">
-                        <span class="text-sm text-gray-600">Remember me</span>
-                    </label>
-                    <a href="#" class="text-sm text-blue-500 hover:text-blue-600 transition">Forgot password?</a>
-                </div>
-                
-                <button type="submit" class="w-full px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg font-medium hover:shadow-lg transition">
-                    Login
-                </button>
-                
-                <div class="mt-6 text-center">
-                    <p class="text-gray-600">Don't have an account? <a href="#" onclick="switchToSignup()" class="text-blue-500 hover:text-blue-600 transition">Sign up</a></p>
-                </div>
-            </form>
-        </div>
-    </div>
-    
-    <!-- Sign Up Modal -->
-    <div id="signupModal" class="modal">
-        <div class="glass rounded-xl p-6 md:p-8 w-full max-w-md mx-4">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-semibold text-gray-800">Sign Up for Baymax</h3>
-                <button onclick="closeSignupModal()" class="text-gray-500 hover:text-gray-700 transition">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            
-            <form onsubmit="handleSignup(event)">
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-medium mb-2">Full Name</label>
-                    <input type="text" id="signupName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="John Doe" required>
-                </div>
-                
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-medium mb-2">Email</label>
-                    <input type="email" id="signupEmail" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="your@email.com" required>
-                </div>
-                
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-medium mb-2">Password</label>
-                    <input type="password" id="signupPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="••••••••" required>
-                </div>
-                
-                <div class="mb-6">
-                    <label class="block text-gray-700 font-medium mb-2">Confirm Password</label>
-                    <input type="password" id="confirmPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="••••••••" required>
-                </div>
-                
-                <div class="mb-6">
-                    <label class="flex items-center">
-                        <input type="checkbox" class="mr-2" required>
-                        <span class="text-sm text-gray-600">I agree to the <a href="#" class="text-blue-500 hover:text-blue-600 transition">Terms of Service</a> and <a href="#" class="text-blue-500 hover:text-blue-600 transition">Privacy Policy</a></span>
-                    </label>
-                </div>
-                
-                <button type="submit" class="w-full px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg font-medium hover:shadow-lg transition">
-                    Sign Up
-                </button>
-                
-                <div class="mt-6 text-center">
-                    <p class="text-gray-600">Already have an account? <a href="#" onclick="switchToLogin()" class="text-blue-500 hover:text-blue-600 transition">Login</a></p>
-                </div>
-            </form>
-        </div>
-    </div>
-    
-    <!-- Notification -->
-    <div id="notification" class="notification">
-        <div class="flex items-center">
-            <i id="notificationIcon" class="fas fa-check-circle mr-3"></i>
-            <p id="notificationMessage">Success!</p>
-        </div>
-    </div>
     
     <!-- Home Page -->
     <div id="home" class="page active">
@@ -494,347 +304,6 @@
         </section>
     </div>
     
-    <!-- Dashboard Page -->
-    <div id="dashboard" class="page">
-        <section class="px-4 py-8 md:px-8 md:py-12">
-            <div class="max-w-6xl mx-auto">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-                    <div>
-                        <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">My Health Dashboard</h2>
-                        <p class="text-gray-600">Welcome back, <span id="dashboardUserName">John Doe</span>! Here's your health overview.</p>
-                    </div>
-                    <button onclick="showPage('symptom')" class="mt-4 md:mt-0 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg font-medium hover:shadow-lg transition">
-                        <i class="fas fa-plus mr-2"></i> New Symptom Check
-                    </button>
-                </div>
-                
-                <!-- Health Stats Cards -->
-                <div class="grid md:grid-cols-3 gap-6 mb-8">
-                    <div class="health-card glass rounded-lg p-6">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-file-prescription text-white text-xl"></i>
-                            </div>
-                            <span class="text-sm text-gray-500">This Month</span>
-                        </div>
-                        <h3 class="text-2xl font-bold text-gray-800 mb-1">3</h3>
-                        <p class="text-gray-600">Prescriptions Analyzed</p>
-                    </div>
-                    
-                    <div class="health-card glass rounded-lg p-6">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-600 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-stethoscope text-white text-xl"></i>
-                            </div>
-                            <span class="text-sm text-gray-500">This Month</span>
-                        </div>
-                        <h3 class="text-2xl font-bold text-gray-800 mb-1">5</h3>
-                        <p class="text-gray-600">Symptom Checks</p>
-                    </div>
-                    
-                    <div class="health-card glass rounded-lg p-6">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-book-medical text-white text-xl"></i>
-                            </div>
-                            <span class="text-sm text-gray-500">Total</span>
-                        </div>
-                        <h3 class="text-2xl font-bold text-gray-800 mb-1">12</h3>
-                        <p class="text-gray-600">Saved Articles</p>
-                    </div>
-                </div>
-                
-                <!-- Recent Activity -->
-                <div class="glass rounded-xl p-6 md:p-8 mb-8">
-                    <h3 class="text-xl font-semibold text-gray-800 mb-6">Recent Activity</h3>
-                    
-                    <div class="space-y-4">
-                        <div class="flex items-start space-x-4 pb-4 border-b">
-                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                <i class="fas fa-file-prescription text-blue-500"></i>
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="font-medium text-gray-800">Prescription Analyzed</h4>
-                                <p class="text-sm text-gray-600">Amoxicillin 500mg, Ibuprofen 400mg</p>
-                                <p class="text-xs text-gray-500 mt-1">2 days ago</p>
-                            </div>
-                            <button class="text-blue-500 hover:text-blue-600 transition">
-                                <i class="fas fa-arrow-right"></i>
-                            </button>
-                        </div>
-                        
-                        <div class="flex items-start space-x-4 pb-4 border-b">
-                            <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                <i class="fas fa-stethoscope text-purple-500"></i>
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="font-medium text-gray-800">Symptom Check</h4>
-                                <p class="text-sm text-gray-600">Headache, fever, sore throat</p>
-                                <p class="text-xs text-gray-500 mt-1">5 days ago</p>
-                            </div>
-                            <button class="text-blue-500 hover:text-blue-600 transition">
-                                <i class="fas fa-arrow-right"></i>
-                            </button>
-                        </div>
-                        
-                        <div class="flex items-start space-x-4">
-                            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                <i class="fas fa-bookmark text-green-500"></i>
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="font-medium text-gray-800">Article Saved</h4>
-                                <p class="text-sm text-gray-600">Understanding Migraine Triggers</p>
-                                <p class="text-xs text-gray-500 mt-1">1 week ago</p>
-                            </div>
-                            <button class="text-blue-500 hover:text-blue-600 transition">
-                                <i class="fas fa-arrow-right"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Health Reminders -->
-                <div class="glass rounded-xl p-6 md:p-8">
-                    <h3 class="text-xl font-semibold text-gray-800 mb-6">Health Reminders</h3>
-                    
-                    <div class="space-y-4">
-                        <div class="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-pills text-blue-500"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-medium text-gray-800">Amoxicillin</h4>
-                                    <p class="text-sm text-gray-600">Take 1 capsule three times a day</p>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-sm font-medium text-blue-600">Next dose</p>
-                                <p class="text-xs text-gray-500">2:00 PM</p>
-                            </div>
-                        </div>
-                        
-                        <div class="flex items-center justify-between p-4 bg-purple-50 rounded-lg">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-user-md text-purple-500"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-medium text-gray-800">Doctor Appointment</h4>
-                                    <p class="text-sm text-gray-600">Annual checkup with Dr. Smith</p>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-sm font-medium text-purple-600">Tomorrow</p>
-                                <p class="text-xs text-gray-500">10:30 AM</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </div>
-    
-    <!-- Profile Page -->
-    <div id="profile" class="page">
-        <section class="px-4 py-8 md:px-8 md:py-12">
-            <div class="max-w-4xl mx-auto">
-                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">My Profile</h2>
-                
-                <div class="glass rounded-xl p-6 md:p-8 mb-8">
-                    <div class="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6 mb-8">
-                        <div class="w-24 h-24 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full flex items-center justify-center">
-                            <i class="fas fa-user text-white text-3xl"></i>
-                        </div>
-                        <div class="text-center md:text-left">
-                            <h3 class="text-xl font-semibold text-gray-800 mb-1" id="profileName">John Doe</h3>
-                            <p class="text-gray-600 mb-4" id="profileEmail">john.doe@example.com</p>
-                            <button class="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg font-medium hover:shadow-lg transition">
-                                <i class="fas fa-camera mr-2"></i> Change Photo
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <form onsubmit="updateProfile(event)">
-                        <div class="grid md:grid-cols-2 gap-6 mb-6">
-                            <div>
-                                <label class="block text-gray-700 font-medium mb-2">First Name</label>
-                                <input type="text" id="firstName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" value="John">
-                            </div>
-                            <div>
-                                <label class="block text-gray-700 font-medium mb-2">Last Name</label>
-                                <input type="text" id="lastName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" value="Doe">
-                            </div>
-                        </div>
-                        
-                        <div class="mb-6">
-                            <label class="block text-gray-700 font-medium mb-2">Email</label>
-                            <input type="email" id="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" value="john.doe@example.com">
-                        </div>
-                        
-                        <div class="mb-6">
-                            <label class="block text-gray-700 font-medium mb-2">Phone Number</label>
-                            <input type="tel" id="phone" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" value="+1 (555) 123-4567">
-                        </div>
-                        
-                        <div class="mb-6">
-                            <label class="block text-gray-700 font-medium mb-2">Date of Birth</label>
-                            <input type="date" id="dob" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" value="1985-05-15">
-                        </div>
-                        
-                        <div class="mb-6">
-                            <label class="block text-gray-700 font-medium mb-2">Gender</label>
-                            <select id="gender" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="male" selected>Male</option>
-                                <option value="female">Female</option>
-                                <option value="other">Other</option>
-                                <option value="prefer-not-to-say">Prefer not to say</option>
-                            </select>
-                        </div>
-                        
-                        <div class="mb-6">
-                            <label class="block text-gray-700 font-medium mb-2">Emergency Contact</label>
-                            <input type="text" id="emergencyContact" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" value="Jane Doe (555) 987-6543">
-                        </div>
-                        
-                        <div class="flex flex-col sm:flex-row gap-4">
-                            <button type="submit" class="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg font-medium hover:shadow-lg transition">
-                                Save Changes
-                            </button>
-                            <button type="button" class="px-6 py-3 glass rounded-lg font-medium hover:shadow-lg transition">
-                                Cancel
-                            </button>
-                        </div>
-                    </form>
-                </div>
-                
-                <div class="glass rounded-xl p-6 md:p-8">
-                    <h3 class="text-xl font-semibold text-gray-800 mb-6">Privacy Settings</h3>
-                    
-                    <div class="space-y-4">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h4 class="font-medium text-gray-800">Data Sharing</h4>
-                                <p class="text-sm text-gray-600">Allow sharing of anonymized health data for research</p>
-                            </div>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" class="sr-only peer" checked>
-                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
-                            </label>
-                        </div>
-                        
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h4 class="font-medium text-gray-800">Email Notifications</h4>
-                                <p class="text-sm text-gray-600">Receive health tips and reminders via email</p>
-                            </div>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" class="sr-only peer" checked>
-                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
-                            </label>
-                        </div>
-                        
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h4 class="font-medium text-gray-800">Two-Factor Authentication</h4>
-                                <p class="text-sm text-gray-600">Add an extra layer of security to your account</p>
-                            </div>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" class="sr-only peer">
-                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </div>
-    
-    <!-- Health History Page -->
-    <div id="history" class="page">
-        <section class="px-4 py-8 md:px-8 md:py-12">
-            <div class="max-w-6xl mx-auto">
-                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Health History</h2>
-                
-                <div class="glass rounded-xl p-6 mb-8">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-                        <h3 class="text-lg font-semibold text-gray-800">Filter History</h3>
-                        <div class="flex flex-col sm:flex-row gap-3 mt-4 md:mt-0">
-                            <select class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option>All Types</option>
-                                <option>Prescriptions</option>
-                                <option>Symptom Checks</option>
-                                <option>Lab Results</option>
-                            </select>
-                            <select class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option>Last 30 Days</option>
-                                <option>Last 3 Months</option>
-                                <option>Last 6 Months</option>
-                                <option>Last Year</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="space-y-4">
-                        <div class="border-l-4 border-blue-400 pl-4 py-4">
-                            <div class="flex flex-col md:flex-row md:items-center justify-between">
-                                <div>
-                                    <h4 class="font-medium text-gray-800">Prescription Analysis</h4>
-                                    <p class="text-sm text-gray-600 mt-1">Amoxicillin 500mg, Ibuprofen 400mg</p>
-                                    <p class="text-xs text-gray-500 mt-2">June 15, 2023</p>
-                                </div>
-                                <div class="flex items-center space-x-3 mt-3 md:mt-0">
-                                    <button class="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition">
-                                        View Details
-                                    </button>
-                                    <button class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition">
-                                        Download PDF
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="border-l-4 border-purple-400 pl-4 py-4">
-                            <div class="flex flex-col md:flex-row md:items-center justify-between">
-                                <div>
-                                    <h4 class="font-medium text-gray-800">Symptom Check</h4>
-                                    <p class="text-sm text-gray-600 mt-1">Headache, fever, sore throat - Possible: Common Cold</p>
-                                    <p class="text-xs text-gray-500 mt-2">June 10, 2023</p>
-                                </div>
-                                <div class="flex items-center space-x-3 mt-3 md:mt-0">
-                                    <button class="px-3 py-1 text-sm bg-purple-100 text-purple-700 rounded-full hover:bg-purple-200 transition">
-                                        View Details
-                                    </button>
-                                    <button class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition">
-                                        Download PDF
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="border-l-4 border-green-400 pl-4 py-4">
-                            <div class="flex flex-col md:flex-row md:items-center justify-between">
-                                <div>
-                                    <h4 class="font-medium text-gray-800">Lab Results</h4>
-                                    <p class="text-sm text-gray-600 mt-1">Blood Test - All values within normal range</p>
-                                    <p class="text-xs text-gray-500 mt-2">May 28, 2023</p>
-                                </div>
-                                <div class="flex items-center space-x-3 mt-3 md:mt-0">
-                                    <button class="px-3 py-1 text-sm bg-green-100 text-green-700 rounded-full hover:bg-green-200 transition">
-                                        View Details
-                                    </button>
-                                    <button class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition">
-                                        Download PDF
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </div>
-    
     <!-- Prescription Reader Page -->
     <div id="prescription" class="page">
         <section class="px-4 py-8 md:px-8 md:py-12">
@@ -943,9 +412,6 @@
                         </button>
                         <button onclick="setReminder()" class="px-4 py-2 glass rounded-lg font-medium hover:shadow-lg transition">
                             <i class="fas fa-bell mr-2"></i> Set Medication Reminder
-                        </button>
-                        <button onclick="saveToHistory()" class="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg font-medium hover:shadow-lg transition">
-                            <i class="fas fa-save mr-2"></i> Save to Health History
                         </button>
                     </div>
                 </div>
@@ -1434,4 +900,759 @@
                         
                         <div class="border-b pb-4">
                             <button onclick="toggleFAQ(this)" class="w-full flex justify-between items-center text-left">
-                                <h4 class="font-medium text
+                                <h4 class="font-medium text-gray-800">How accurate is Baymax's symptom analysis?</h4>
+                                <i class="fas fa-chevron-down text-gray-500 transition-transform"></i>
+                            </button>
+                            <div class="hidden mt-3 text-gray-600">
+                                <p>Baymax's symptom analysis is based on extensive medical data and research, but it's not 100% accurate. The results are meant to provide insights and possibilities, not definitive diagnoses. Always follow up with a healthcare professional for accurate diagnosis.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="border-b pb-4">
+                            <button onclick="toggleFAQ(this)" class="w-full flex justify-between items-center text-left">
+                                <h4 class="font-medium text-gray-800">Can Baymax read handwritten prescriptions?</h4>
+                                <i class="fas fa-chevron-down text-gray-500 transition-transform"></i>
+                            </button>
+                            <div class="hidden mt-3 text-gray-600">
+                                <p>Yes, Baymax can read most handwritten prescriptions with good accuracy, though results may vary depending on handwriting clarity. For best results, ensure the image is clear and well-lit. Always double-check the extracted information with your pharmacist.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="pb-4">
+                            <button onclick="toggleFAQ(this)" class="w-full flex justify-between items-center text-left">
+                                <h4 class="font-medium text-gray-800">Is Baymax available in multiple languages?</h4>
+                                <i class="fas fa-chevron-down text-gray-500 transition-transform"></i>
+                            </button>
+                            <div class="hidden mt-3 text-gray-600">
+                                <p>Currently, Baymax is available in English, but we're working on adding support for additional languages. You can check our updates page for information on new language releases.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="glass rounded-xl p-6 md:p-8">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Contact Us</h3>
+                    <p class="text-gray-600 mb-6">Have a question or feedback? We'd love to hear from you.</p>
+                    
+                    <form onsubmit="submitSupportForm(event)">
+                        <div class="grid md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">Name</label>
+                                <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">Email</label>
+                                <input type="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="block text-gray-700 font-medium mb-2">Subject</label>
+                            <select class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option>General Inquiry</option>
+                                <option>Technical Issue</option>
+                                <option>Feature Request</option>
+                                <option>Feedback</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label class="block text-gray-700 font-medium mb-2">Message</label>
+                            <textarea rows="4" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg font-medium hover:shadow-lg transition">
+                            Send Message <i class="fas fa-paper-plane ml-1"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Floating Chatbot Button -->
+    <button id="chatbotBtn" onclick="toggleChatbot()" class="fixed bottom-6 right-6 w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition z-50 chatbot-bubble">
+        <i class="fas fa-comments text-white text-xl"></i>
+    </button>
+    
+    <!-- Chatbot Window -->
+    <div id="chatbotWindow" class="fixed bottom-24 right-6 w-80 h-96 glass rounded-xl shadow-xl hidden z-50 flex flex-col">
+        <div class="bg-gradient-to-r from-blue-500 to-purple-500 text-white p-4 rounded-t-xl flex justify-between items-center">
+            <h3 class="font-semibold">Baymax Assistant</h3>
+            <button onclick="toggleChatbot()" class="text-white hover:text-gray-200 transition">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div id="chatMessages" class="flex-1 p-4 overflow-y-auto">
+            <div class="mb-4">
+                <div class="bg-blue-100 text-blue-700 rounded-lg p-3 max-w-xs">
+                    <p class="text-sm">Hello! I'm Baymax, your health assistant. How can I help you today?</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="p-4 border-t">
+            <div class="flex">
+                <input type="text" id="chatInput" placeholder="Type your message..." class="flex-1 px-3 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button onclick="sendMessage()" class="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-r-lg hover:shadow-md transition">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Health Encyclopedia Database
+        const encyclopediaData = {
+            'diabetes': [
+                {
+                    title: 'Type 2 Diabetes',
+                    description: 'A chronic condition that affects the way your body metabolizes sugar (glucose). With type 2 diabetes, your body either resists the effects of insulin or doesn\'t produce enough insulin to maintain normal glucose levels.',
+                    category: 'Condition',
+                    readTime: '5 min read'
+                },
+                {
+                    title: 'Diabetes Management',
+                    description: 'Comprehensive guide to managing diabetes through diet, exercise, medication, and lifestyle changes.',
+                    category: 'Treatment',
+                    readTime: '7 min read'
+                }
+            ],
+            'hypertension': [
+                {
+                    title: 'High Blood Pressure (Hypertension)',
+                    description: 'A common condition in which the long-term force of the blood against your artery walls is high enough that it may eventually cause health problems, such as heart disease.',
+                    category: 'Condition',
+                    readTime: '4 min read'
+                },
+                {
+                    title: 'Blood Pressure Monitoring',
+                    description: 'Learn how to monitor your blood pressure at home and understand the readings.',
+                    category: 'Diagnostic Tests',
+                    readTime: '3 min read'
+                }
+            ],
+            'asthma': [
+                {
+                    title: 'Asthma',
+                    description: 'A condition in which your airways narrow and swell and produce extra mucus. This can make breathing difficult and trigger coughing, wheezing and shortness of breath.',
+                    category: 'Condition',
+                    readTime: '6 min read'
+                },
+                {
+                    title: 'Asthma Inhalers Guide',
+                    description: 'Understanding different types of asthma inhalers and how to use them effectively.',
+                    category: 'Treatment',
+                    readTime: '5 min read'
+                }
+            ],
+            'covid-19': [
+                {
+                    title: 'COVID-19',
+                    description: 'Infectious disease caused by SARS-CoV-2 virus. Learn about symptoms, prevention, and treatment options.',
+                    category: 'Condition',
+                    readTime: '8 min read'
+                },
+                {
+                    title: 'COVID-19 Prevention',
+                    description: 'Essential tips to protect yourself and others from COVID-19 infection.',
+                    category: 'Prevention',
+                    readTime: '4 min read'
+                }
+            ],
+            'migraine': [
+                {
+                    title: 'Migraine',
+                    description: 'A neurological condition characterized by intense, debilitating headaches. Symptoms may include nausea, vomiting, and sensitivity to light and sound.',
+                    category: 'Condition',
+                    readTime: '6 min read'
+                },
+                {
+                    title: 'Migraine Triggers',
+                    description: 'Common triggers for migraines and how to avoid them.',
+                    category: 'Prevention',
+                    readTime: '5 min read'
+                }
+            ],
+            'conditions': [
+                {
+                    title: 'Common Cold',
+                    description: 'Viral infection of the nose and throat causing runny nose, sore throat, and cough.',
+                    category: 'Condition',
+                    readTime: '3 min read'
+                },
+                {
+                    title: 'Influenza (Flu)',
+                    description: 'Respiratory infection caused by influenza viruses with symptoms including fever, body aches, and fatigue.',
+                    category: 'Condition',
+                    readTime: '4 min read'
+                },
+                {
+                    title: 'Arthritis',
+                    description: 'Inflammation of one or more joints, causing pain and stiffness that can worsen with age.',
+                    category: 'Condition',
+                    readTime: '7 min read'
+                }
+            ],
+            'symptoms': [
+                {
+                    title: 'Understanding Fever',
+                    description: 'Learn what fever means, when to be concerned, and how to manage it.',
+                    category: 'Symptom',
+                    readTime: '4 min read'
+                },
+                {
+                    title: 'Headache Types',
+                    description: 'Different types of headaches and their causes, from tension headaches to migraines.',
+                    category: 'Symptom',
+                    readTime: '6 min read'
+                },
+                {
+                    title: 'Chest Pain Causes',
+                    description: 'Understanding various causes of chest pain and when to seek emergency care.',
+                    category: 'Symptom',
+                    readTime: '5 min read'
+                }
+            ],
+            'treatments': [
+                {
+                    title: 'Antibiotics Guide',
+                    description: 'How antibiotics work, when they\'re needed, and the importance of completing the full course.',
+                    category: 'Treatment',
+                    readTime: '6 min read'
+                },
+                {
+                    title: 'Pain Management',
+                    description: 'Various approaches to managing pain, from medications to alternative therapies.',
+                    category: 'Treatment',
+                    readTime: '7 min read'
+                },
+                {
+                    title: 'Physical Therapy Benefits',
+                    description: 'How physical therapy can help recover from injuries and manage chronic conditions.',
+                    category: 'Treatment',
+                    readTime: '5 min read'
+                }
+            ],
+            'prevention': [
+                {
+                    title: 'Healthy Diet Guidelines',
+                    description: 'Nutritional guidelines for maintaining optimal health and preventing chronic diseases.',
+                    category: 'Prevention',
+                    readTime: '8 min read'
+                },
+                {
+                    title: 'Exercise for Health',
+                    description: 'Benefits of regular exercise and guidelines for different age groups.',
+                    category: 'Prevention',
+                    readTime: '6 min read'
+                },
+                {
+                    title: 'Stress Management',
+                    description: 'Techniques for managing stress and improving mental well-being.',
+                    category: 'Prevention',
+                    readTime: '5 min read'
+                }
+            ],
+            'first-aid': [
+                {
+                    title: 'CPR Basics',
+                    description: 'Step-by-step guide to performing cardiopulmonary resuscitation (CPR).',
+                    category: 'First Aid',
+                    readTime: '7 min read'
+                },
+                {
+                    title: 'Treating Burns',
+                    description: 'First aid for different types of burns and when to seek medical help.',
+                    category: 'First Aid',
+                    readTime: '4 min read'
+                },
+                {
+                    title: 'Choking Response',
+                    description: 'How to help someone who is choking using the Heimlich maneuver.',
+                    category: 'First Aid',
+                    readTime: '5 min read'
+                }
+            ],
+            'tests': [
+                {
+                    title: 'Blood Test Results',
+                    description: 'Understanding common blood test results and what they mean for your health.',
+                    category: 'Diagnostic Tests',
+                    readTime: '8 min read'
+                },
+                {
+                    title: 'MRI Scan Guide',
+                    description: 'What to expect during an MRI scan and how to prepare for it.',
+                    category: 'Diagnostic Tests',
+                    readTime: '4 min read'
+                },
+                {
+                    title: 'X-Ray Information',
+                    description: 'How X-rays work, what they detect, and safety considerations.',
+                    category: 'Diagnostic Tests',
+                    readTime: '5 min read'
+                }
+            ]
+        };
+
+        // Page Navigation
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Show selected page
+            document.getElementById(pageId).classList.add('active');
+            
+            // Close mobile menu if open
+            document.getElementById('mobileMenu').classList.add('hidden');
+            
+            // Update nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('text-blue-500');
+                link.classList.add('text-gray-700');
+            });
+        }
+        
+        // Mobile Menu Toggle
+        document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+            document.getElementById('mobileMenu').classList.toggle('hidden');
+        });
+        
+        // Prescription Reader Functions
+        const uploadArea = document.getElementById('uploadArea');
+        const prescriptionFile = document.getElementById('prescriptionFile');
+        
+        // Drag and drop functionality
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            
+            if (e.dataTransfer.files.length) {
+                handleFileUpload(e.dataTransfer.files[0]);
+            }
+        });
+        
+        prescriptionFile.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                handleFileUpload(e.target.files[0]);
+            }
+        });
+        
+        function handleFileUpload(file) {
+            // Check file type
+            if (!file.type.match('image.*') && file.type !== 'application/pdf') {
+                alert('Please upload an image or PDF file.');
+                return;
+            }
+            
+            // Display uploaded file
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileSize').textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+            document.getElementById('uploadedFile').classList.remove('hidden');
+            uploadArea.classList.add('hidden');
+        }
+        
+        function analyzePrescription() {
+            // Show loading state
+            const uploadedFile = document.getElementById('uploadedFile');
+            const originalContent = uploadedFile.innerHTML;
+            uploadedFile.innerHTML = '<div class="flex items-center justify-center p-4"><div class="loader"></div><span class="ml-3">Analyzing prescription...</span></div>';
+            
+            // Simulate API call
+            setTimeout(() => {
+                uploadedFile.innerHTML = originalContent;
+                document.getElementById('prescriptionResults').classList.remove('hidden');
+                
+                // Scroll to results
+                document.getElementById('prescriptionResults').scrollIntoView({ behavior: 'smooth' });
+            }, 2000);
+        }
+        
+        function downloadPrescriptionInfo() {
+            // Simulate download
+            alert('Downloading prescription summary...');
+        }
+        
+        function setReminder() {
+            // Simulate setting reminder
+            alert('Medication reminder set successfully!');
+        }
+        
+        // Symptom Checker Functions
+        const selectedSymptoms = new Set();
+        let selectedSeverity = 0;
+        
+        function toggleSymptom(button, symptom) {
+            if (selectedSymptoms.has(symptom)) {
+                selectedSymptoms.delete(symptom);
+                button.classList.remove('bg-blue-100', 'text-blue-700');
+                button.classList.add('bg-gray-100', 'text-gray-700');
+            } else {
+                selectedSymptoms.add(symptom);
+                button.classList.remove('bg-gray-100', 'text-gray-700');
+                button.classList.add('bg-blue-100', 'text-blue-700');
+            }
+        }
+        
+        function setSeverity(level) {
+            selectedSeverity = level;
+            
+            // Update UI
+            document.querySelectorAll('.severity-btn').forEach(btn => {
+                btn.classList.remove('bg-green-100', 'text-green-700', 'bg-yellow-100', 'text-yellow-700', 'bg-red-100', 'text-red-700');
+                btn.classList.add('bg-gray-100', 'text-gray-700');
+            });
+            
+            const selectedBtn = document.querySelectorAll('.severity-btn')[level - 1];
+            if (level === 1) {
+                selectedBtn.classList.remove('bg-gray-100', 'text-gray-700');
+                selectedBtn.classList.add('bg-green-100', 'text-green-700');
+            } else if (level === 2) {
+                selectedBtn.classList.remove('bg-gray-100', 'text-gray-700');
+                selectedBtn.classList.add('bg-yellow-100', 'text-yellow-700');
+            } else if (level === 3) {
+                selectedBtn.classList.remove('bg-gray-100', 'text-gray-700');
+                selectedBtn.classList.add('bg-red-100', 'text-red-700');
+            }
+        }
+        
+        function analyzeSymptoms() {
+            const description = document.getElementById('symptomDescription').value;
+            const duration = document.getElementById('symptomDuration').value;
+            
+            if (!description && selectedSymptoms.size === 0) {
+                alert('Please describe your symptoms or select from the common symptoms list.');
+                return;
+            }
+            
+            // Show loading state
+            const symptomResults = document.getElementById('symptomResults');
+            const originalContent = symptomResults.innerHTML;
+            symptomResults.innerHTML = '<div class="flex items-center justify-center p-8"><div class="loader"></div><span class="ml-3">Analyzing symptoms...</span></div>';
+            symptomResults.classList.remove('hidden');
+            
+            // Simulate API call
+            setTimeout(() => {
+                // Restore original content and show results
+                symptomResults.innerHTML = `
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Symptom Analysis Results</h3>
+                    
+                    <div class="glass rounded-lg p-6 mb-6">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mr-3">
+                                <i class="fas fa-exclamation-triangle text-yellow-500 text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800">Possible Conditions</h4>
+                                <p class="text-sm text-gray-500">Based on your symptoms, here are some possibilities</p>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="border-l-4 border-yellow-400 pl-4">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h5 class="font-medium text-gray-800">Common Cold</h5>
+                                        <p class="text-sm text-gray-600 mt-1">Viral infection of the nose and throat</p>
+                                        <div class="flex items-center mt-2">
+                                            <span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full">75% match</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border-l-4 border-yellow-400 pl-4">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h5 class="font-medium text-gray-800">Influenza (Flu)</h5>
+                                        <p class="text-sm text-gray-600 mt-1">Respiratory infection caused by influenza viruses</p>
+                                        <div class="flex items-center mt-2">
+                                            <span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full">60% match</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border-l-4 border-yellow-400 pl-4">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h5 class="font-medium text-gray-800">COVID-19</h5>
+                                        <p class="text-sm text-gray-600 mt-1">Infectious disease caused by SARS-CoV-2 virus</p>
+                                        <div class="flex items-center mt-2">
+                                            <span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full">45% match</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="glass rounded-lg p-6 mb-6">
+                        <h4 class="font-semibold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-clipboard-list text-blue-500 mr-2"></i> Recommended Next Steps
+                        </h4>
+                        <ul class="space-y-2 text-gray-600">
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                <span>Rest and stay hydrated by drinking plenty of fluids</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                <span>Take over-the-counter pain relievers for fever and discomfort</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                <span>Monitor your symptoms and seek medical attention if they worsen</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                <span>Consider getting tested for COVID-19 if you've been exposed or symptoms persist</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="glass rounded-lg p-6 mb-6">
+                        <h4 class="font-semibold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-exclamation-circle text-red-500 mr-2"></i> When to Seek Immediate Medical Attention
+                        </h4>
+                        <p class="text-gray-600 mb-3">Contact emergency services or visit an emergency room if you experience:</p>
+                        <ul class="space-y-2 text-gray-600">
+                            <li class="flex items-start">
+                                <i class="fas fa-exclamation-triangle text-red-500 mt-1 mr-2"></i>
+                                <span>Difficulty breathing or shortness of breath</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-exclamation-triangle text-red-500 mt-1 mr-2"></i>
+                                <span>Persistent pain or pressure in the chest</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-exclamation-triangle text-red-500 mt-1 mr-2"></i>
+                                <span>Confusion or inability to wake up</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-exclamation-triangle text-red-500 mt-1 mr-2"></i>
+                                <span>Bluish lips or face</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button onclick="saveSymptomReport()" class="px-4 py-2 glass rounded-lg font-medium hover:shadow-lg transition">
+                            <i class="fas fa-save mr-2"></i> Save Report
+                        </button>
+                        <button onclick="findNearbyDoctor()" class="px-4 py-2 glass rounded-lg font-medium hover:shadow-lg transition">
+                            <i class="fas fa-hospital mr-2"></i> Find Nearby Doctor
+                        </button>
+                    </div>
+                `;
+                
+                // Scroll to results
+                symptomResults.scrollIntoView({ behavior: 'smooth' });
+            }, 2000);
+        }
+        
+        function saveSymptomReport() {
+            alert('Symptom report saved successfully!');
+        }
+        
+        function findNearbyDoctor() {
+            alert('Finding nearby doctors and clinics...');
+        }
+        
+        // Health Encyclopedia Functions
+        function quickSearch(term) {
+            document.getElementById('encyclopediaSearch').value = term;
+            searchEncyclopedia();
+        }
+        
+        function searchEncyclopedia() {
+            const searchTerm = document.getElementById('encyclopediaSearch').value.toLowerCase();
+            
+            if (!searchTerm) {
+                document.getElementById('encyclopediaResults').classList.add('hidden');
+                return;
+            }
+            
+            // Show loading state
+            const resultsDiv = document.getElementById('encyclopediaResults');
+            const resultsContainer = document.getElementById('resultsContainer');
+            resultsContainer.innerHTML = '<div class="flex items-center justify-center p-8"><div class="loader"></div><span class="ml-3">Searching...</span></div>';
+            resultsDiv.classList.remove('hidden');
+            
+            // Simulate API call
+            setTimeout(() => {
+                let results = [];
+                
+                // Search in the database
+                if (encyclopediaData[searchTerm]) {
+                    results = encyclopediaData[searchTerm];
+                } else {
+                    // Search across all categories
+                    for (const category in encyclopediaData) {
+                        const categoryResults = encyclopediaData[category].filter(item => 
+                            item.title.toLowerCase().includes(searchTerm) || 
+                            item.description.toLowerCase().includes(searchTerm)
+                        );
+                        results = results.concat(categoryResults);
+                    }
+                }
+                
+                // Display results
+                if (results.length > 0) {
+                    resultsContainer.innerHTML = results.map(item => `
+                        <div class="glass rounded-lg p-6">
+                            <h4 class="font-semibold text-gray-800 mb-2">${item.title}</h4>
+                            <p class="text-gray-600 mb-3">${item.description}</p>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4 text-sm text-gray-500">
+                                    <span><i class="fas fa-book-open mr-1"></i> ${item.category}</span>
+                                    <span><i class="fas fa-clock mr-1"></i> ${item.readTime}</span>
+                                </div>
+                                <button onclick="viewArticle('${item.title}')" class="text-blue-500 font-medium hover:text-blue-600 transition">
+                                    Read More <i class="fas fa-arrow-right ml-1"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    resultsContainer.innerHTML = `
+                        <div class="glass rounded-lg p-8 text-center">
+                            <i class="fas fa-search text-gray-400 text-4xl mb-4"></i>
+                            <h4 class="text-lg font-medium text-gray-800 mb-2">No results found</h4>
+                            <p class="text-gray-600">Try searching with different keywords or browse our categories.</p>
+                        </div>
+                    `;
+                }
+            }, 1500);
+        }
+        
+        function showCategory(category) {
+            document.getElementById('encyclopediaSearch').value = category;
+            searchEncyclopedia();
+        }
+        
+        function viewArticle(title) {
+            alert(`Opening article: ${title}\n\nIn a real application, this would open the full article in a new page or modal.`);
+        }
+        
+        document.getElementById('encyclopediaSearch').addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') {
+                searchEncyclopedia();
+            }
+        });
+        
+        // Support Page Functions
+        function toggleFAQ(button) {
+            const content = button.nextElementSibling;
+            const icon = button.querySelector('i');
+            
+            content.classList.toggle('hidden');
+            icon.classList.toggle('rotate-180');
+        }
+        
+        function submitSupportForm(event) {
+            event.preventDefault();
+            
+            // Show success message
+            const form = event.target;
+            const originalContent = form.innerHTML;
+            form.innerHTML = '<div class="text-center p-8"><i class="fas fa-check-circle text-green-500 text-5xl mb-4"></i><h3 class="text-xl font-semibold text-gray-800 mb-2">Message Sent!</h3><p class="text-gray-600">We\'ll get back to you within 24 hours.</p></div>';
+            
+            // Reset form after 3 seconds
+            setTimeout(() => {
+                form.innerHTML = originalContent;
+                form.reset();
+            }, 3000);
+        }
+        
+        // Chatbot Functions
+        function toggleChatbot() {
+            const chatbotWindow = document.getElementById('chatbotWindow');
+            chatbotWindow.classList.toggle('hidden');
+            
+            if (!chatbotWindow.classList.contains('hidden')) {
+                document.getElementById('chatInput').focus();
+            }
+        }
+        
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Add user message
+            const messagesDiv = document.getElementById('chatMessages');
+            messagesDiv.innerHTML += `
+                <div class="mb-4 flex justify-end">
+                    <div class="bg-blue-500 text-white rounded-lg p-3 max-w-xs">
+                        <p class="text-sm">${message}</p>
+                    </div>
+                </div>
+            `;
+            
+            // Clear input
+            input.value = '';
+            
+            // Show typing indicator
+            messagesDiv.innerHTML += `
+                <div class="mb-4" id="typingIndicator">
+                    <div class="bg-gray-200 text-gray-700 rounded-lg p-3 max-w-xs">
+                        <p class="text-sm">Baymax is typing...</p>
+                    </div>
+                </div>
+            `;
+            
+            // Scroll to bottom
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            
+            // Simulate response
+            setTimeout(() => {
+                // Remove typing indicator
+                document.getElementById('typingIndicator').remove();
+                
+                // Add bot response
+                const responses = [
+                    "I understand your concern. Based on what you've described, it might be helpful to consult with a healthcare professional for a proper diagnosis.",
+                    "Thank you for sharing that with me. Have you considered tracking these symptoms in a journal to share with your doctor?",
+                    "That sounds concerning. While I can't provide a diagnosis, I recommend reaching out to a healthcare provider for personalized advice.",
+                    "I'm here to help you understand health information better. For specific medical advice, please consult with a qualified healthcare professional."
+                ];
+                
+                const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                
+                messagesDiv.innerHTML += `
+                    <div class="mb-4">
+                        <div class="bg-blue-100 text-blue-700 rounded-lg p-3 max-w-xs">
+                            <p class="text-sm">${randomResponse}</p>
+                        </div>
+                    </div>
+                `;
+                
+                // Scroll to bottom
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            }, 1500);
+        }
+        
+        document.getElementById('chatInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
